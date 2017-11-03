@@ -604,11 +604,11 @@ void pthread_read(void *arg)
 	
 	printf("pthread_read sockfd = %d\n",sockfd);
 	
-	struct timeval timeout = {30,0}; 
+	struct timeval timeout = {3,0}; 
 	//设置接收超时
 	setsockopt(sockfd, SOL_SOCKET, SO_RCVTIMEO, (char *)&timeout, sizeof(struct timeval));
 	
-	struct timeval timeout_send = {10,0}; 
+	struct timeval timeout_send = {1,0}; 
 	//设置发送超时
 	setsockopt(sockfd, SOL_SOCKET,SO_SNDTIMEO, (char *)&timeout_send, sizeof(struct timeval));
 	while(1)
