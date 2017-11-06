@@ -19,9 +19,7 @@
 #include <sys/socket.h>
 
 #include <stdint.h>
-#include <unistd.h>
 #include <getopt.h>
-#include <string.h>
 #include <sys/ioctl.h>
 #include <linux/types.h>
 #include "spidev.h"
@@ -30,6 +28,9 @@
 #include <time.h>
 #include <limits.h>
 #include <stdarg.h>
+#include <sys/types.h>    
+#include <termios.h>  
+
 
 
 #define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
@@ -46,7 +47,7 @@
 #define MSGSIZE 1024*11  //发送显示信息msg大小
 
 #define DEBUG 0
-
+#define UART_DEVICE "/dev/ttyS2" //uart设备文件名 
 
 int net_init();
 int login(void *arg);

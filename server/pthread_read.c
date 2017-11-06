@@ -583,6 +583,88 @@ int change_passwd(void *arg, char buf[])
 	return 0;
 }
 
+int set_WB(int cmd)  
+{  
+  
+    int    fdWB;  
+    struct termios  oldtio, newtio;  
+	char wbuf[1];
+	
+//-----------打开uart设备文件------------------  
+    fdWB = open(UART_DEVICE, O_RDWR|O_NOCTTY);//没有设置 O_NONBLOCK，所以这里 read 和 write 是阻塞操作  
+    if (fdWB < 0) {  
+        perror(UART_DEVICE);  
+        exit(-1);  
+    }  
+    else  
+        printf("Open %s success\n", UART_DEVICE);  
+
+//-----------设置操作参数-----------------------    
+    tcgetattr(fdWB, &oldtio);//获取当前操作模式参数  
+    memset( &newtio, 0, sizeof(newtio));  
+	
+    //波特率=115200 数据位=8 使能数据接收   
+    newtio.c_cflag = B115200|CS8|CLOCAL|CREAD;  
+    newtio.c_iflag = IGNPAR;   
+    //newtio.c_oflag = OPOST | OLCUC; //  
+    /* 设定为正规模式 */  
+    //newtio.c_lflag = ICANON;  
+  
+    tcflush(fdWB, TCIFLUSH);//清空输入缓冲区和输出缓冲区  
+    tcsetattr(fdWB, TCSANOW, &newtio);//设置新的操作参数  
+
+	//------------向urat发送数据-------------------
+	
+	switch(cmd)
+	{
+		case 1:
+			wbuf[0] = 1; 
+			break;
+		case 2:
+			wbuf[0] = 2;
+			break;	
+		case 3:
+			wbuf[0] = 3;
+			break;
+		case 4:
+			wbuf[0] = 4;
+			break;	
+		case 5:
+			wbuf[0] = 'a'; 
+			break;
+		case 6:
+			wbuf[0] = 'b';
+			break;	
+		case 7:
+			wbuf[0] = 'c';
+			break;
+		case 8:
+			wbuf[0] = 'd';
+			break;	
+		case 9:
+			wbuf[0] = 'e'; 
+			break;
+		case 10:
+			wbuf[0] = 'f';
+			break;	
+		case 11:
+			wbuf[0] = 'g';
+			break;
+		case 12:
+			wbuf[0] = 'h';
+			break;	
+		default:
+			printf("set_WB cmd = %d\n", cmd);
+	}
+	printf("set_WB cmd = %d", cmd);
+	write( fdWB, wbuf, 1);  
+//------------关闭uart设备文件，恢复原先参数--------  
+    close(fdWB);  
+    printf("Close %s\n", UART_DEVICE);  
+    tcsetattr(fdWB, TCSANOW, &oldtio); //恢复原先的设置  
+  
+    return 0;  
+}
 
 void pthread_read(void *arg)
 {
@@ -599,6 +681,7 @@ void pthread_read(void *arg)
 	char Digital_Loopback[DATALEN] = {0};
 	char DA_power[DATALEN] = {0};
 	char AD_power[DATALEN] = {0};
+	char WB_mode[DATALEN] = {0};
 	flag = 0;
 	static_socket = 0;
 	
@@ -801,6 +884,19 @@ void pthread_read(void *arg)
 			if((wdata == 0) || (wdata == 1) || (wdata == 2) || (wdata == 3) || (wdata == 4) || (wdata == 5) || (wdata == 6) || (wdata == 7))
 			{
 				wReg("tx_attenuate", wdata);
+			}
+		}
+		if(type == '7') //设置微波信道和高低栈
+		{
+			for( i = 0; i < DATALEN; i++)
+			{
+				WB_mode[i] = buf[1+i];
+			}
+			wdata = atoi( WB_mode);
+			printf("set WB_mode = %d\n", wdata);
+			if((wdata == 1) || (wdata == 2) || (wdata == 3) || (wdata == 4) || (wdata == 5) || (wdata == 6) || (wdata == 7) || (wdata == 8) || (wdata == 9) || (wdata == 10) || (wdata == 11) || (wdata == 12))
+			{
+				set_WB( wdata);
 			}
 		}
 		
