@@ -765,7 +765,7 @@ void pthread_read(void *arg)
 		if(type == '4') //软复位 reset
 		{
 			printf("system reset %c\n", type);
-			wReg("common_scope_sel_enable", 0x1);
+			wReg("evb_common_scope_sel_ena", 0x1);
 			wReg("evb_sw_reset", 0x1);
 		}
 		
