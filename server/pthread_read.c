@@ -750,6 +750,10 @@ void pthread_read(void *arg)
 			{
 				AD_power[i] = buf[57+i];
 			}
+			for( i = 0; i < DATALEN; i++)
+			{
+				WB_mode[i] = buf[65+i];
+			}
 			
 			printf(" Msg type=%c, Modulation=%s, Channel=%s, Data_source=%s, Code_ratio=%s, interleaver_depth=%s, Digital_Loopback=%s, DA_power=%s, AD_power=%s\n",
 				type, Modulation, Channel, Data_source, Code_ratio, interleaver_depth, Digital_Loopback, DA_power, AD_power);
@@ -841,7 +845,17 @@ void pthread_read(void *arg)
 			}else{
 				printf("AD_power error value! wdata = %d\n",wdata);
 			}
-
+			
+			bzero(wbuf,128);
+			wdata=atoi( WB_mode);
+			if((wdata == 1) || (wdata == 2) || (wdata == 3) || (wdata == 4) || (wdata == 5) || (wdata == 6) || (wdata == 7) || (wdata == 8) || (wdata == 9) || (wdata == 10) || (wdata == 11) || (wdata == 12))
+			{
+				sprintf(wbuf, "7-wbmode=%d\n", wdata);
+				fputs(wbuf, fp);
+			}else{
+				printf("WB_mode error value! wdata = %d\n",wdata);
+			}
+			
 			fclose(fp);
 		}
 		
@@ -897,6 +911,7 @@ void pthread_read(void *arg)
 			if((wdata == 1) || (wdata == 2) || (wdata == 3) || (wdata == 4) || (wdata == 5) || (wdata == 6) || (wdata == 7) || (wdata == 8) || (wdata == 9) || (wdata == 10) || (wdata == 11) || (wdata == 12))
 			{
 				set_WB( wdata);
+				wb_data = wdata;
 			}
 		}
 		

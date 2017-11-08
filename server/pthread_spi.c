@@ -1383,8 +1383,8 @@ void pthread_spi(void *arg)
 				fft1024_power = avg_sum/10;
 				
 				memset(msg_AD, 0, 1024);
-				sprintf( msg_AD, "serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d;", 
-					netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c);
+				sprintf( msg_AD, "serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d, WB_data=%d;", 
+					netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c, wb_data);
 #if DEBUG				
 				printf("%s\n",msg_AD);
 				printf("========sockfd = %d======\n", sockfd);
@@ -1479,8 +1479,8 @@ void pthread_spi(void *arg)
 				// fft1024_power = avg_sum/10;
 				fft1024_power = 0;
 				memset(msg, 0, MSGSIZE);
-				sprintf( msg, "%s;serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d", 
-					TLevelbuf, netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c);
+				sprintf( msg, "%s;serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d, WB_data=%d;", 
+					TLevelbuf, netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c, wb_data);
 #if DEBUG
 				printf("%s\n",msg);
 				printf("========sockfd = %d======\n", sockfd);
@@ -1515,8 +1515,8 @@ void pthread_spi(void *arg)
 					);
 				#endif	
 				memset(msg, 0, MSGSIZE);
-				sprintf( msg, "%s;serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d", 
-					TLevelbuf, netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c);
+				sprintf( msg, "%s;serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d, WB_data=%d;", 
+					TLevelbuf, netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c, wb_data);
 #if 1
 				printf("%s\n",msg);
 				printf("========sockfd = %d======\n", sockfd);

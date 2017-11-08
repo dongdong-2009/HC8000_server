@@ -67,6 +67,7 @@ int static_socket;
 
 int da_data;
 int ad_data;
+int wb_data;
 
 //char buf[SIZEBUF]; //接收信息buf 1+8N模式解析信息
 
