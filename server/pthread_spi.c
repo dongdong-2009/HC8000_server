@@ -1527,8 +1527,9 @@ void pthread_spi(void *arg)
 					return;
 				}
 				printf("***send Constellation msg success!\n");
-			}
+			}			
 		}
+		usleep(50000);
 	}
     close(fdFpga);
 	return ;	
