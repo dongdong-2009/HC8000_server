@@ -1263,7 +1263,7 @@ void pthread_spi(void *arg)
 	uint32_t buf[1024] = {0};
 	char TLevelbuf[1024*10] = {0};
 	double fft1024_power;
-	double tlevel_avg[10];
+	double tlevel_avg[5];
 	double avg_sum;
 	flag = 0;
 	flag1 = 0;
@@ -1316,12 +1316,6 @@ void pthread_spi(void *arg)
 	get_ip_mac(netbuf, 100);
 	//printf("get_ip_mac: %s\n", netbuf);
 	
-	for(i = 0; i < 10; i++)
-	{
-		fft1024_power = spi_fpga_rcv_fft1024_power( buf);
-		tlevel_avg[i] = fft1024_power;
-		
-	}
 	
 	while(1)
 	{
@@ -1365,22 +1359,23 @@ void pthread_spi(void *arg)
 			sndTHR = r_THR(R4008, R400c, R4010, R7004, R700c);
 			rcvTHR = r_THR(R4108, R410c, R4110, R7004, R700c);
 			
+			memset(tlevel_avg,0,5);
 			memset(msg_AD, 0, 1024);	
 			if(flag1) //status
 			{
 				//读取电平速率
 				avg_sum = 0;
-				for(i = 0; i < 9; i++)
+				for(i = 0; i < 4; i++)
 				{
 					tlevel_avg[i] = tlevel_avg[i+1];
 				}
 				fft1024_power = spi_fpga_rcv_fft1024_power(buf);
-				tlevel_avg[9] = fft1024_power;
-				for(i = 0; i < 10; i++)
+				tlevel_avg[4] = fft1024_power;
+				for(i = 0; i < 5; i++)
 				{
 					avg_sum += tlevel_avg[i];
 				}
-				fft1024_power = avg_sum/10;
+				fft1024_power = avg_sum/5;
 				
 				memset(msg_AD, 0, 1024);
 				sprintf( msg_AD, "serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d, WB_data=%d;", 
