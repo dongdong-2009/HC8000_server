@@ -1,12 +1,64 @@
-#include "protocol.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <unistd.h>
+#include <netinet/in.h>
+#include <arpa/inet.h> 
+#include <pthread.h> 
+#include <errno.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <sys/socket.h>
 
-static fdFpga1 = 0;
+#include <stdint.h>
+#include <getopt.h>
+#include <sys/ioctl.h>
+#include <linux/types.h>
+#include "spidev.h"
+
+#include <math.h>
+#include <time.h>
+#include <limits.h>
+#include <stdarg.h>
+#include <sys/types.h>    
+#include <termios.h>  
+
+
+
+#define ARRAY_SIZE(a) (sizeof(a) / sizeof((a)[0]))
+#define debug_pos() printf("%s-%d\n", __FUNCTION__, __LINE__);
+#define PI 3.1415926535897932384626433832795028841971
+#define RX_BUF_SIZE_DIV4 1024
+#define RX_BUF_SIZE_DIV2 (RX_BUF_SIZE_DIV4 *2)
+#define RX_BUF_SIZE_DIV8 512
+
+#define PORT 32000  //网络端口
+#define SIZEBUF 256 //接收信息buf的大小
+#define DATALEN 8  //截取字段
+#define MSGBUF 24  //发送信息buf大小
+#define MSGSIZE 1024*11  //发送显示信息msg大小
+
+#define DEBUG 0
+#define UART_DEVICE "/dev/ttyS2" //uart设备文件名 
+
+
+static int fdFpga1 = 0;
 static const char *device = "/dev/spidev1.0";
 static uint8_t mode;
 static uint8_t bits = 8;
 //static uint32_t speed = 500000;
 static uint32_t speed = 20000000;
 static uint16_t delay;
+
+struct Reg{
+	char name[32];
+	int addr_base;
+	int addr_offset;
+	int width;
+	uint32_t mask;
+}tmp;
 
 struct Reg reg[] = 
 {	
@@ -415,9 +467,8 @@ static int tranfer_msg(int fd, uint8_t *tx, uint8_t *rx, int len)
 		.cs_change = 0,
 	};
 	
-	pthread_mutex_lock(&mutex);
+
 	ret = ioctl(fd, SPI_IOC_MESSAGE(1), &tr);
-	pthread_mutex_unlock(&mutex);
 	
 	if (ret == 1){ perror("SPI_IOC_MESSAGE"); return -1;}
 	
@@ -633,7 +684,7 @@ int set_wb(int cmd)
     return 0;  
 }
 
-int config_setting()
+int main()
 {
 	int c, ret;
 	int wdata;
@@ -1544,8 +1595,7 @@ int config_setting()
 			Dagain[3] = buf[12];			
 			wdata = atoi( Dagain);
 			printf("buf=%s wdata=%d\n", buf, wdata);
-			da_data = wdata;
-			
+
 			int DA_fd;	
 			if((DA_fd = open("/dev/dac_dev0", O_RDWR)) < 0)
 			{
@@ -1565,7 +1615,6 @@ int config_setting()
 			Adgain[3] = buf[12];			
 			wdata = atoi( Adgain);
 			printf("buf=%s wdata=%d\n", buf, wdata);
-			ad_data = wdata;
 			if((wdata == 0) || (wdata == 1) || (wdata == 2) || (wdata == 3) || (wdata == 4) || (wdata == 5) || (wdata == 6) || (wdata == 7))
 			{
 				wReg("tx_attenuate", wdata);
@@ -1580,11 +1629,9 @@ int config_setting()
 			WB_mode[3] = buf[12];			
 			wdata = atoi( WB_mode);
 			printf("buf=%s wdata=%d\n", buf, wdata);
-			ad_data = wdata;
 			if((wdata == 1) || (wdata == 2) || (wdata == 3) || (wdata == 4) || (wdata == 5) || (wdata == 6) || (wdata == 7) || (wdata == 8) || (wdata == 9) || (wdata == 10) || (wdata == 11) || (wdata == 12))
 			{
 				set_wb( wdata);
-				wb_data = wdata;
 			}
 		}	
 		bzero(buf,128);  //将字符数组清零，需要头文件strings.h

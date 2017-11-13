@@ -755,8 +755,8 @@ void pthread_read(void *arg)
 				WB_mode[i] = buf[65+i];
 			}
 			
-			printf(" Msg type=%c, Modulation=%s, Channel=%s, Data_source=%s, Code_ratio=%s, interleaver_depth=%s, Digital_Loopback=%s, DA_power=%s, AD_power=%s\n",
-				type, Modulation, Channel, Data_source, Code_ratio, interleaver_depth, Digital_Loopback, DA_power, AD_power);
+			printf(" Msg type=%c, Modulation=%s, Channel=%s, Data_source=%s, Code_ratio=%s, interleaver_depth=%s, Digital_Loopback=%s, DA_power=%s, AD_power=%s, WB_mode=%s\n",
+				type, Modulation, Channel, Data_source, Code_ratio, interleaver_depth, Digital_Loopback, DA_power, AD_power, WB_mode);
 			
 			FILE *fp;
 			char wbuf[128];

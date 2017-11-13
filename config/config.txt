@@ -1,0 +1,8 @@
+z-modulation=4
+y-channel=12
+x-datasource=1
+w-coderate=7
+v-interleaverdepth=14
+u-digitalloopback=1
+5-dagain=45
+6-adgain=3

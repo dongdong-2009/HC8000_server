@@ -18,10 +18,6 @@ int main(int argc, char *argv[])
 	
 	sockfd = net_init();
 	
-	//初始化配置
-	sleep(1);
-	config_setting();
-	
 	while(1)
 	{
 		
