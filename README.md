@@ -1,2 +1,8 @@
-# HC8000_server
+
 HC8000的服务器端源代码
+
+config配置程序
+restart监控程序
+server主程序
+
+version以前未保存在GitHub上的程序版本
