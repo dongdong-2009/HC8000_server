@@ -1090,15 +1090,13 @@ static char *Digital_LoopbackM(uint32_t data)
 	uint32_t digital_Loopback= ((data)&0x01);
 	return Loopback[digital_Loopback];
 }
-#if 0
+
 //增益值DA的数值
 int get_DA()
 {
-	int c;
 	int wdata;
 	char buf[128]={0};
 	char Dagain[4]={0};
-	char Adgain[4]={0};
 	
 	FILE *fp;
 	
@@ -1121,13 +1119,12 @@ int get_DA()
 			printf("buf=%s wdata=%d\n", buf, wdata);
 		}
 	}
-	
+	fclose(fp);
 	return wdata;
 }
 //level的值
 int get_AD()
 {
-	int c;
 	int wdata;
 	char buf[128]={0};
 	char Adgain[4]={0};
@@ -1157,7 +1154,40 @@ int get_AD()
 	fclose(fp);
 	return wdata;
 }
-#endif
+
+//微波高低栈的编号
+int get_WB()
+{
+	int wdata;
+	char buf[128]={0};
+	char WB_mode[4]={0};
+	
+	FILE *fp;
+	
+	if((fp = fopen("config.txt","r+"))==NULL)//打开文件，之后判断是否打开成功
+	{
+		perror("cannot open file");
+		exit(0);
+	}
+	while(fgets(buf,128,fp)!=NULL)
+	{
+
+		if(buf[0] == '7')
+		{
+			bzero(WB_mode,3);
+			WB_mode[0] = buf[9];
+			WB_mode[1] = buf[10];
+			WB_mode[2] = buf[11];
+			WB_mode[3] = buf[12];			
+			wdata = atoi( WB_mode);
+			printf("buf=%s wdata=%d\n", buf, wdata);
+		}
+		bzero(buf,128);
+	}
+	fclose(fp);
+	return wdata;
+}
+
 //误码率
 static uint32_t uncoded_ber(uint32_t data)
 {
@@ -1327,10 +1357,10 @@ void pthread_spi(void *arg)
     printf("bits per word: %d\n", bits);
     printf("max speed: %d Hz (%d KHz)\n", speed, speed/1000);
 	
-	//IP MAC TIME
-	get_ip_mac(netbuf, 100);
-	//printf("get_ip_mac: %s\n", netbuf);
-	
+	//读取配置文件获得增益、LEVEL、高低栈编号
+	da_data = get_DA();
+	ad_data = get_AD();
+	wb_data = get_WB();
 	
 	while(1)
 	{
@@ -1346,9 +1376,10 @@ void pthread_spi(void *arg)
 		if(flag1 || flag2 || flag3 || flag4)
 		{
 			sockfd = static_socket;
-			//printf("========sockfd = %d======\n", sockfd);
+			//IP MAC TIME
+			get_ip_mac(netbuf, 100);
 			runinfo(timebuf, 100);
-			//printf("runinfo: %s\n", timebuf);
+			
 			//寄存器的设定
 			uint32_t R0 = fpga_read_uint32(0);
 			uint32_t R4008 = fpga_read_uint32(0x4008);

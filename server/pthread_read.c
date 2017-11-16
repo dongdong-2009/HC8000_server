@@ -682,6 +682,9 @@ void pthread_read(void *arg)
 	char DA_power[DATALEN] = {0};
 	char AD_power[DATALEN] = {0};
 	char WB_mode[DATALEN] = {0};
+	char ip[DATALEN*4] = {0};
+	char mac[DATALEN*4] = {0};
+	char date[DATALEN*4] = {0};
 	flag = 0;
 	static_socket = 0;
 	
@@ -1940,6 +1943,64 @@ void pthread_read(void *arg)
 				wReg("rx_digital_loop_ena", wdata);
 			}
 		}
+		
+		if(type == 'Z')//set ip
+		{
+			for( i = 0; i < DATALEN*4; i++)
+			{
+				ip[i] = buf[1+i];
+			}
+			char ipbuf[128] = {0};
+			sprintf(ipbuf, "ifconfig eth0 %s\n", ip);
+			printf("ipbuf = %s",ipbuf);
+			system(ipbuf);
+		}
+		if(type == 'Y')//set mac
+		{
+			for( i = 0; i < DATALEN*4; i++)
+			{
+				mac[i] = buf[1+i];
+			}
+			char macbuf[128] = {0};
+			sprintf(macbuf, "ifconfig eth0 hw ether %s\n", mac);
+			printf("macbuf = %s",macbuf);
+			system("ifcofnig eth0 down\n");
+			system(macbuf);
+			system("ifcofnig eth0 up\n");
+		}
+		if(type == 'Y')//set date
+		{
+			for( i = 0; i < DATALEN*4; i++)
+			{
+				date[i] = buf[1+i];
+			}
+			char datebuf[128] = "date -s \"";
+			datebuf[9] = date[0];
+			datebuf[10] = date[1]; 
+			datebuf[11] = date[2];
+			datebuf[12] = date[3];//year
+			datebuf[13] = '-';
+			datebuf[14] = date[4];
+			datebuf[15] = date[5];
+			datebuf[16] = '-';
+			datebuf[17] = date[6];
+			datebuf[18] = date[7];
+			datebuf[19] = ' ';
+			datebuf[20] = date[8];
+			datebuf[21] = date[9];//时
+			datebuf[22] = date[10];
+			datebuf[23] = date[11];
+			datebuf[24] = date[12];//分
+			datebuf[25] = date[13];
+			datebuf[26] = date[14];
+			datebuf[27] = date[15];//秒
+			datebuf[28] = '"';
+			datebuf[28] = '\n';
+			printf("datebuf = %s",datebuf);
+			system(datebuf);
+			system("hwclock -w\n"); //硬件时钟同步
+		}
+		
 	}
 	return;
 }
