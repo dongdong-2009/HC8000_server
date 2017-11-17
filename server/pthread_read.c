@@ -682,9 +682,17 @@ void pthread_read(void *arg)
 	char DA_power[DATALEN] = {0};
 	char AD_power[DATALEN] = {0};
 	char WB_mode[DATALEN] = {0};
+	FILE *fp;
+	char wbuf[128];
+	
 	char ip[DATALEN*4] = {0};
 	char mac[DATALEN*4] = {0};
-	char date[DATALEN*4] = {0};
+	char date[DATALEN*4] = {0};	
+	FILE *fp_ip;
+	char ipbuf[128] = {0};
+	FILE *fp_mac;
+	char macbuf[128] = {0};
+	
 	flag = 0;
 	static_socket = 0;
 	
@@ -760,9 +768,6 @@ void pthread_read(void *arg)
 			
 			printf(" Msg type=%c, Modulation=%s, Channel=%s, Data_source=%s, Code_ratio=%s, interleaver_depth=%s, Digital_Loopback=%s, DA_power=%s, AD_power=%s, WB_mode=%s\n",
 				type, Modulation, Channel, Data_source, Code_ratio, interleaver_depth, Digital_Loopback, DA_power, AD_power, WB_mode);
-			
-			FILE *fp;
-			char wbuf[128];
 			
 			if((fp = fopen("config.txt","w+"))==NULL)//打开文件，之后判断是否打开成功
 			{
@@ -1950,10 +1955,19 @@ void pthread_read(void *arg)
 			{
 				ip[i] = buf[1+i];
 			}
-			char ipbuf[128] = {0};
+			bzero(ipbuf,128);
 			sprintf(ipbuf, "ifconfig eth0 %s\n", ip);
 			printf("ipbuf = %s",ipbuf);
 			system(ipbuf);
+
+			if((fp_ip = fopen("ip.sh","w+"))==NULL)//打开文件，之后判断是否打开成功
+			{
+				perror("cannot open file");
+				exit(0);
+			}
+			fputs(ipbuf, fp_ip);
+			
+			fclose(fp_ip);
 		}
 		if(type == 'Y')//set mac
 		{
@@ -1961,12 +1975,24 @@ void pthread_read(void *arg)
 			{
 				mac[i] = buf[1+i];
 			}
-			char macbuf[128] = {0};
+			bzero(macbuf,128);
 			sprintf(macbuf, "ifconfig eth0 hw ether %s\n", mac);
 			printf("macbuf = %s",macbuf);
 			system("ifcofnig eth0 down\n");
 			system(macbuf);
 			system("ifcofnig eth0 up\n");
+
+			if((fp_mac = fopen("mac.sh","w+"))==NULL)//打开文件，之后判断是否打开成功
+			{
+				perror("cannot open file");
+				exit(0);
+			}
+			fputs("ifcofnig eth0 down\n", fp_mac);
+			fputs(macbuf, fp_mac);
+			fputs("ifcofnig eth0 up\n", fp_mac);
+			
+			fclose(fp_mac);
+			
 		}
 		if(type == 'Y')//set date
 		{
