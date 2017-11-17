@@ -1296,6 +1296,47 @@ int runinfo(char *buf, int len)
 	return 0;
 }
 
+int read_stonmsg(char *buf_stationmsg)
+{
+	FILE *fpston;
+	char stonbuf[128] = {0};
+	char buf_number[16] = {0};
+	char buf_name[64] = {0};
+	char buf_longitude[10] = {0};
+	char buf_atitude[10] = {0};
+	
+	if((fpston = fopen("stationmsg.txt","r+"))==NULL)//打开文件，之后判断是否打开成功
+	{
+		perror("cannot open file");
+		exit(0);
+	}
+	while(fgets( stonbuf, 128, fpston) != NULL)
+	{
+		if(stonbuf[1] == 'u')
+		{
+			strcpy(buf_number, stonbuf);
+		}
+		if(stonbuf[1] == 'a')
+		{
+			strcpy(buf_name, stonbuf);
+		}
+		if(stonbuf[0] == 'l')
+		{
+			strcpy(buf_longitude, stonbuf);
+		}
+		if(stonbuf[0] == 'a')
+		{
+			strcpy(buf_atitude, stonbuf);
+		}
+		bzero(stonbuf,30);
+	}
+	
+	sprintf(buf_stationmsg,"%s%s%s%s", buf_number, buf_name, buf_longitude, buf_atitude);
+	
+	fclose(fpston);
+	return 0;
+}
+
 void pthread_spi(void *arg)
 {
     int ret, i;

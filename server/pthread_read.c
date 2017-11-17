@@ -692,7 +692,12 @@ void pthread_read(void *arg)
 	char ipbuf[128] = {0};
 	FILE *fp_mac;
 	char macbuf[128] = {0};
-	
+	FILE *fp_ston;
+	char stonbuf[128] = {0};
+	char buf_number[16] = {0};
+	char buf_name[64] = {0};
+	char buf_longitude[10] = {0};
+	char buf_atitude[10] = {0};
 	flag = 0;
 	static_socket = 0;
 	
@@ -1003,7 +1008,7 @@ void pthread_read(void *arg)
 				wReg("tx_mod_indx", wdata);		
 			}
 		}
-		if(type == 'y')//(通道带宽)Channel
+		if(type == 'y')//通道带宽Channel
 		{
 			for( i = 0; i < DATALEN; i++)
 			{
@@ -2026,7 +2031,49 @@ void pthread_read(void *arg)
 			system(datebuf);
 			system("hwclock -w\n"); //硬件时钟同步
 		}
-		
+		if(type == 'W')//站点信息
+		{
+			for( i = 0; i < 16; i++)
+			{
+				buf_number[i] = buf[1+i];
+			}
+			for( i = 0; i < 64; i++)
+			{
+				buf_name[i] = buf[17+i];
+			}
+			for( i = 0; i < 10; i++)
+			{
+				buf_longitude[i] = buf[81+i];
+			}
+			for( i = 0; i < 10; i++)
+			{
+				buf_atitude[i] = buf[91+i];
+			}
+			
+			if((fp_ston = fopen("stationmsg.txt","r+"))==NULL)//打开文件，之后判断是否打开成功
+			{
+				perror("cannot open file");
+				exit(0);
+			}
+			
+			bzero(stonbuf,128);
+			sprintf(stonbuf, "number:%s\n", buf_number);
+			fputs(stonbuf, fp_ston);
+			
+			bzero(stonbuf,128);
+			sprintf(stonbuf, "name:%s\n", buf_name);
+			fputs(stonbuf, fp_ston);
+			
+			bzero(stonbuf,128);
+			sprintf(stonbuf, "longitude:%s\n", buf_longitude);
+			fputs(stonbuf, fp_ston);
+			
+			bzero(stonbuf,128);
+			sprintf(stonbuf, "atitude:%s\n", buf_atitude);
+			fputs(stonbuf, fp_ston);
+			
+			fclose(fp_ston);
+		}
 	}
 	return;
 }
