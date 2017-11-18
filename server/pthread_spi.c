@@ -1296,7 +1296,7 @@ int runinfo(char *buf, int len)
 	return 0;
 }
 
-int read_stonmsg(char *buf_stationmsg)
+int read_stonmsg(char *buf_stationmsg, int len)
 {
 	FILE *fpston;
 	char stonbuf[128] = {0};
@@ -1331,9 +1331,18 @@ int read_stonmsg(char *buf_stationmsg)
 		bzero(stonbuf,30);
 	}
 	
-	sprintf(buf_stationmsg,"%s%s%s%s", buf_number, buf_name, buf_longitude, buf_atitude);
+	snprintf( buf_stationmsg, len, "%s%s%s%s", buf_number, buf_name, buf_longitude, buf_atitude);
 	
 	fclose(fpston);
+	return 0;
+}
+
+int get_date(char *date, int len)
+{
+	time_t timep;
+	time (&timep);
+	snprintf( date, len, "%s", ctime(&timep));
+	
 	return 0;
 }
 
@@ -1344,6 +1353,9 @@ void pthread_spi(void *arg)
 	char msg_AD[1024] = {0};
 	char netbuf[128] = {0};
 	char timebuf[128] = {0};
+	char stonmsg[128] = {0};
+	char datebuf[128] = {0};
+	
 	int sockfd = *((int *)arg);
 	
 	uint32_t buf[1024] = {0};
@@ -1420,6 +1432,8 @@ void pthread_spi(void *arg)
 			//IP MAC TIME
 			get_ip_mac(netbuf, 100);
 			runinfo(timebuf, 100);
+			read_stonmsg(stonmsg, 100);
+			get_date(datebuf, 100);
 			
 			//寄存器的设定
 			uint32_t R0 = fpga_read_uint32(0);
@@ -1472,8 +1486,8 @@ void pthread_spi(void *arg)
 					fft1024_power = avg_sum/5;
 					
 					memset(msg_AD, 0, 1024);
-					sprintf( msg_AD, "serverip:%s,%s,version=%d.%d_1.01.02;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d, WB_data=%d;", 
-						netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c, wb_data);
+					sprintf( msg_AD, "serverip:%s,%s,version=%d.%d_1.01.02,%s,%s;snd:TLevel=0.0 dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, Data_rate=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d;rev:TLevel=%.2f dBm,NBWidth=%.1f MHz,MType=%s, Symbol_rate=%.2f Mbd, NSpeed=%.2f Mbp/s, Ilv_depth=%d, Code_rate=%d/%d, Distor_AMAM=%d, Distor_AMAP=%d, %s, Data_source=%d, DA_data=%d, AD_data=%d, bert_uncoded=%d, bert_coded=%d %d, mse_avg=%d, WB_data=%d;", 
+						netbuf, timebuf, r_ver_major(R0), r_ver_minor(R0), stonmsg, datebuf, tx_symrate(R4008, R4010), r_mod_indx( R4008, R7004, R700c), Symbol_rate( R4008, R4010), sndTHR, r_ilv_depth(R4008), r_fec_cw_len(R400c), r_fec_pl_len(R400c), fft1024_power, rx_symrate(R4108, R4110), r_mod_indx( R4108, R7004, R700c), Symbol_rate( R4108, R4110), rcvTHR, r_ilv_depth(R4108), r_fec_pl_len(R400c), r_fec_cw_len(R400c), r_Distortion_AMAM(R4138), r_Distortion_AMAP(R4138), Digital_LoopbackM(R4148), rReg("tx_dbg_bert_ena"), da_data, ad_data, R414c, R4150, R4164, R413c, wb_data);
 
 					if((ret = send( sockfd, msg_AD, 1024, 0)) <= 0)
 					{
