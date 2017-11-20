@@ -1417,6 +1417,7 @@ void pthread_spi(void *arg)
 	
 	while(1)
 	{
+		usleep(1000);
 		if(flag)
 		{
 			printf("__FILE__=%s __FUNCTION__=%s __LINE__=%d __DATE__=%s __TIME__=%s\n", __FILE__, __FUNCTION__, __LINE__, __DATE__, __TIME__);		
