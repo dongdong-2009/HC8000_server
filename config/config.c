@@ -670,7 +670,55 @@ int set_wb(int cmd)
 			break;
 		case 12:
 			wbuf[0] = 'h';
+			break;
+		case 13:
+			wbuf[0] = 'A'; 
+			break;
+		case 14:
+			wbuf[0] = 'B';
 			break;	
+		case 15:
+			wbuf[0] = 'C';
+			break;
+		case 16:
+			wbuf[0] = 'D';
+			break;	
+		case 17:
+			wbuf[0] = 'E'; 
+			break;
+		case 18:
+			wbuf[0] = 'F';
+			break;	
+		case 19:
+			wbuf[0] = 'G';
+			break;
+		case 20:
+			wbuf[0] = 'H';
+			break;
+		case 21:
+			wbuf[0] = 'I'; 
+			break;
+		case 22:
+			wbuf[0] = 'G';
+			break;	
+		case 23:
+			wbuf[0] = 'K';
+			break;
+		case 24:
+			wbuf[0] = 'L';
+			break;	
+		case 25:
+			wbuf[0] = 'M'; 
+			break;
+		case 26:
+			wbuf[0] = 'N';
+			break;	
+		case 27:
+			wbuf[0] = 'O';
+			break;
+		case 28:
+			wbuf[0] = 'P';
+			break;						
 		default:
 			printf("set_WB cmd = %d\n", cmd);
 	}
