@@ -508,7 +508,7 @@ static int wReg(char name[], int wdata)
 	return 0;
 }
 
-#if 0 
+ 
 static uint32_t rReg(char name[])
 {
 	int i, itmp;
@@ -534,7 +534,7 @@ static uint32_t rReg(char name[])
 	
 	return src_data;
 }
-#endif
+
 
 int change_passwd(void *arg, char buf[])
 {
@@ -589,7 +589,7 @@ int set_WB(int cmd)
     int    fdWB;  
     struct termios  oldtio, newtio;  
 	char wbuf[1];
-	
+	uint32_t chnel;
 //-----------打开uart设备文件------------------  
     fdWB = open(UART_DEVICE, O_RDWR|O_NOCTTY);//没有设置 O_NONBLOCK，所以这里 read 和 write 是阻塞操作  
     if (fdWB < 0) {  
@@ -614,98 +614,81 @@ int set_WB(int cmd)
     tcsetattr(fdWB, TCSANOW, &newtio);//设置新的操作参数  
 
 	//------------向urat发送数据-------------------
-	
-	switch(cmd)
+	chnel = rReg("tx_symrate") & 0xff;
+	printf("tx_symrate = %d\n", chnel);
+	if(chnel == 32) //28M带宽
 	{
-		case 1:
-			wbuf[0] = 1; 
-			break;
-		case 2:
-			wbuf[0] = 2;
-			break;	
-		case 3:
-			wbuf[0] = 3;
-			break;
-		case 4:
-			wbuf[0] = 4;
-			break;	
-		case 5:
-			wbuf[0] = 'a'; 
-			break;
-		case 6:
-			wbuf[0] = 'b';
-			break;	
-		case 7:
-			wbuf[0] = 'c';
-			break;
-		case 8:
-			wbuf[0] = 'd';
-			break;	
-		case 9:
-			wbuf[0] = 'e'; 
-			break;
-		case 10:
-			wbuf[0] = 'f';
-			break;	
-		case 11:
-			wbuf[0] = 'g';
-			break;
-		case 12:
-			wbuf[0] = 'h';
-			break;
-		case 13:
-			wbuf[0] = 'A'; 
-			break;
-		case 14:
-			wbuf[0] = 'B';
-			break;	
-		case 15:
-			wbuf[0] = 'C';
-			break;
-		case 16:
-			wbuf[0] = 'D';
-			break;	
-		case 17:
-			wbuf[0] = 'E'; 
-			break;
-		case 18:
-			wbuf[0] = 'F';
-			break;	
-		case 19:
-			wbuf[0] = 'G';
-			break;
-		case 20:
-			wbuf[0] = 'H';
-			break;
-		case 21:
-			wbuf[0] = 'I'; 
-			break;
-		case 22:
-			wbuf[0] = 'G';
-			break;	
-		case 23:
-			wbuf[0] = 'K';
-			break;
-		case 24:
-			wbuf[0] = 'L';
-			break;	
-		case 25:
-			wbuf[0] = 'M'; 
-			break;
-		case 26:
-			wbuf[0] = 'N';
-			break;	
-		case 27:
-			wbuf[0] = 'O';
-			break;
-		case 28:
-			wbuf[0] = 'P';
-			break;			
-		default:
-			printf("set_WB cmd = %d\n", cmd);
+		printf("28M带宽\n");
+		switch(cmd)
+		{
+			case 1:
+				wbuf[0] = 31; 
+				break;
+			case 2:
+				wbuf[0] = 32;
+				break;	
+			case 3:
+				wbuf[0] = 33;
+				break;
+			case 4:
+				wbuf[0] = 34;
+				break;	
+			case 5:
+				wbuf[0] = 35; 
+				break;
+			case 6:
+				wbuf[0] = 36;
+				break;	
+			case 7:
+				wbuf[0] = 37;
+				break;
+			case 8:
+				wbuf[0] = 38;
+				break;		
+			default:
+				printf("set_WB cmd = %d\n", cmd);
+		}
+		write( fdWB, wbuf, 1);  
 	}
-	printf("set_WB cmd = %d", cmd);
-	write( fdWB, wbuf, 1);  
+	if(chnel == 64) //56M带宽
+	{
+		printf("56M带宽\n");
+		switch(cmd)
+		{
+			case 1:
+				wbuf[0] = 21; 
+				break;
+			case 2:
+				wbuf[0] = 22;
+				break;	
+			case 3:
+				wbuf[0] = 23;
+				break;
+			case 4:
+				wbuf[0] = 24;
+				break;
+			default:
+				printf("set_WB cmd = %d\n", cmd);
+		}
+		write( fdWB, wbuf, 1);  
+	}
+	if(chnel == 128) //118M带宽
+	{
+		printf("118M带宽\n");
+		switch(cmd)
+		{
+			case 1:
+				wbuf[0] = 11; 
+				break;
+			case 2:
+				wbuf[0] = 12;
+				break;	
+			default:
+				printf("set_WB cmd = %d\n", cmd);
+		}
+		write( fdWB, wbuf, 1);  
+	}
+	
 //------------关闭uart设备文件，恢复原先参数--------  
     close(fdWB);  
     printf("Close %s\n", UART_DEVICE);  

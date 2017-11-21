@@ -573,33 +573,33 @@ static int wReg(char name[], int wdata)
 	return 0;
 }
 
-#if 0 
+
 static uint32_t rReg(char name[])
 {
 	int i, itmp;
 	//寻找寄存器数组
-	for( i=0; i < (sizeof(reg_w)/sizeof(tmp)); i++)
+	for( i=0; i < (sizeof(reg)/sizeof(tmp)); i++)
 	{
-		if( strcmp( name, (char *)reg_w[i].name) == 0)
+		if( strcmp( name, (char *)reg[i].name) == 0)
 		{
 			itmp = i;
 			break;
 		}
 	}
-	if(i == (sizeof(reg_w)/sizeof(tmp)))
+	if(i == (sizeof(reg)/sizeof(tmp)))
 	{
 		printf("no this register\n");
 		return -1;
 	}
-	printf("reg_w[%d]  addr_base 0x%x  addr_offset %d  width %d  mask 0x%x  mane %s\n", itmp, reg_w[itmp].addr_base, reg_w[itmp].addr_offset, reg_w[itmp].width, reg_w[itmp].mask, reg_w[itmp].name);
+	printf("reg[%d]  addr_base 0x%x  addr_offset %d  width %d  mask 0x%x  mane %s\n", itmp, reg[itmp].addr_base, reg[itmp].addr_offset, reg[itmp].width, reg[itmp].mask, reg[itmp].name);
 	
-	uint32_t src_data = fpga_read_uint32( reg_w[itmp].addr_base);
+	uint32_t src_data = fpga_read_uint32( reg[itmp].addr_base);
 	
-	printf("R(0x%x)=0x%08x\n", reg_w[itmp].addr_base, src_data);
+	printf("R(0x%x)=0x%08x\n", reg[itmp].addr_base, src_data);
 	
 	return src_data;
 }
-#endif
+
 
 int set_wb(int cmd)  
 {  
@@ -607,7 +607,7 @@ int set_wb(int cmd)
     int    fdWB;  
     struct termios  oldtio, newtio;  
 	char wbuf[1];
-	
+	uint32_t chnel;
 //-----------打开uart设备文件------------------  
     fdWB = open(UART_DEVICE, O_RDWR|O_NOCTTY);//没有设置 O_NONBLOCK，所以这里 read 和 write 是阻塞操作  
     if (fdWB < 0) {  
@@ -633,97 +633,81 @@ int set_wb(int cmd)
 
 	//------------向urat发送数据-------------------
 	
-	switch(cmd)
+	chnel = rReg("tx_symrate") & 0xff;
+	printf("tx_symrate = %d\n", chnel);
+	if(chnel == 32) //28M带宽
 	{
-		case 1:
-			wbuf[0] = 1; 
-			break;
-		case 2:
-			wbuf[0] = 2;
-			break;	
-		case 3:
-			wbuf[0] = 3;
-			break;
-		case 4:
-			wbuf[0] = 4;
-			break;	
-		case 5:
-			wbuf[0] = 'a'; 
-			break;
-		case 6:
-			wbuf[0] = 'b';
-			break;	
-		case 7:
-			wbuf[0] = 'c';
-			break;
-		case 8:
-			wbuf[0] = 'd';
-			break;	
-		case 9:
-			wbuf[0] = 'e'; 
-			break;
-		case 10:
-			wbuf[0] = 'f';
-			break;	
-		case 11:
-			wbuf[0] = 'g';
-			break;
-		case 12:
-			wbuf[0] = 'h';
-			break;
-		case 13:
-			wbuf[0] = 'A'; 
-			break;
-		case 14:
-			wbuf[0] = 'B';
-			break;	
-		case 15:
-			wbuf[0] = 'C';
-			break;
-		case 16:
-			wbuf[0] = 'D';
-			break;	
-		case 17:
-			wbuf[0] = 'E'; 
-			break;
-		case 18:
-			wbuf[0] = 'F';
-			break;	
-		case 19:
-			wbuf[0] = 'G';
-			break;
-		case 20:
-			wbuf[0] = 'H';
-			break;
-		case 21:
-			wbuf[0] = 'I'; 
-			break;
-		case 22:
-			wbuf[0] = 'G';
-			break;	
-		case 23:
-			wbuf[0] = 'K';
-			break;
-		case 24:
-			wbuf[0] = 'L';
-			break;	
-		case 25:
-			wbuf[0] = 'M'; 
-			break;
-		case 26:
-			wbuf[0] = 'N';
-			break;	
-		case 27:
-			wbuf[0] = 'O';
-			break;
-		case 28:
-			wbuf[0] = 'P';
-			break;						
-		default:
-			printf("set_WB cmd = %d\n", cmd);
+		printf("28M带宽\n");
+		switch(cmd)
+		{
+			case 1:
+				wbuf[0] = 31; 
+				break;
+			case 2:
+				wbuf[0] = 32;
+				break;	
+			case 3:
+				wbuf[0] = 33;
+				break;
+			case 4:
+				wbuf[0] = 34;
+				break;	
+			case 5:
+				wbuf[0] = 35; 
+				break;
+			case 6:
+				wbuf[0] = 36;
+				break;	
+			case 7:
+				wbuf[0] = 37;
+				break;
+			case 8:
+				wbuf[0] = 38;
+				break;		
+			default:
+				printf("set_WB cmd = %d\n", cmd);
+		}
+		write( fdWB, wbuf, 1);  
 	}
-	printf("set_WB cmd = %d", cmd);
-	write( fdWB, wbuf, 1);  
+	if(chnel == 64) //56M带宽
+	{
+		printf("56M带宽\n");
+		switch(cmd)
+		{
+			case 1:
+				wbuf[0] = 21; 
+				break;
+			case 2:
+				wbuf[0] = 22;
+				break;	
+			case 3:
+				wbuf[0] = 23;
+				break;
+			case 4:
+				wbuf[0] = 24;
+				break;
+			default:
+				printf("set_WB cmd = %d\n", cmd);
+		}
+		write( fdWB, wbuf, 1);  
+	}
+	if(chnel == 128) //118M带宽
+	{
+		printf("118M带宽\n");
+		switch(cmd)
+		{
+			case 1:
+				wbuf[0] = 11; 
+				break;
+			case 2:
+				wbuf[0] = 12;
+				break;	
+			default:
+				printf("set_WB cmd = %d\n", cmd);
+		}
+		write( fdWB, wbuf, 1);  
+	}
+	
 //------------关闭uart设备文件，恢复原先参数--------  
     close(fdWB);  
     printf("Close %s\n", UART_DEVICE);  
