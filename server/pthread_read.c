@@ -2014,9 +2014,9 @@ void pthread_read(void *arg)
 			bzero(macbuf,128);
 			sprintf(macbuf, "ifconfig eth0 hw ether %s\n", mac);
 			printf("macbuf = %s",macbuf);
-			system("ifcofnig eth0 down\n");
+			system("ifconfig eth0 down\n");
 			system(macbuf);
-			system("ifcofnig eth0 up\n");
+			system("ifconfig eth0 up\n");
 
 			if((fp_mac = fopen("mac.sh","w+"))==NULL)//打开文件，之后判断是否打开成功
 			{
@@ -2030,7 +2030,7 @@ void pthread_read(void *arg)
 			fclose(fp_mac);
 			
 		}
-		if(type == 'Y')//set date
+		if(type == 'X')//set date
 		{
 			for( i = 0; i < DATALEN*4; i++)
 			{
@@ -2092,7 +2092,7 @@ void pthread_read(void *arg)
 			fputs(stonbuf, fp_ston);
 			
 			bzero(stonbuf,128);
-			sprintf(stonbuf, "name:%s\n", buf_name);
+			sprintf(stonbuf, "name:%d\n", buf_name);
 			fputs(stonbuf, fp_ston);
 			
 			bzero(stonbuf,128);

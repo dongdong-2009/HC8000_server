@@ -1330,8 +1330,11 @@ int read_stonmsg(char *buf_stationmsg, int len)
 		}
 		bzero(stonbuf,30);
 	}
-	
-	snprintf( buf_stationmsg, len, "%s%s%s%s", buf_number, buf_name, buf_longitude, buf_atitude);
+	buf_number[strlen(buf_number)-1] = '\0';
+	buf_name[strlen(buf_name)-1] = '\0';
+	buf_longitude[strlen(buf_longitude)-1] = '\0';
+	buf_atitude[strlen(buf_atitude)-1] = '\0';
+	snprintf( buf_stationmsg, len, "%s%d%s%s", buf_number, buf_name, buf_longitude, buf_atitude);
 	
 	fclose(fpston);
 	return 0;
@@ -1342,7 +1345,7 @@ int get_date(char *date, int len)
 	time_t timep;
 	time (&timep);
 	snprintf( date, len, "%s", ctime(&timep));
-	
+	date[strlen(date)-1] = '\0';
 	return 0;
 }
 
@@ -1495,7 +1498,7 @@ void pthread_spi(void *arg)
 						close(fdFpga);
 						return;
 					}
-					
+					printf("%s\n",msg_AD);
 					printf("***send status msg_AD success!\n");
 				}
 			}
