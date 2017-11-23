@@ -783,6 +783,7 @@ int main()
 	}
 	while(fgets(buf,128,fp)!=NULL)
 	{
+		usleep(1000);
 		if(buf[0] == 'z')
 		{
 			bzero(Modulation,2);
@@ -1667,7 +1668,6 @@ int main()
 			}
 		}	
 		bzero(buf,128);  //将字符数组清零，需要头文件strings.h
-		sleep(1);
 	}
 	fclose(fp);
 	close(fdFpga1);
