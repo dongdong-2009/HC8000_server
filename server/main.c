@@ -22,14 +22,6 @@ int main(int argc, char *argv[])
 	{
 		
 		pthread_mutex_init (&mutex, NULL);
-
-		//写线程
-		if(pthread_create( &read_thread, NULL, pthread_spi, (void *)&newsockfd) < 0)  
-		{  
-			perror("fail to pthread_create");  
-			//exit(-1);  
-		}
-		
 		
 		if((newsockfd = accept(sockfd,(struct sockaddr *)&caddr, &caddr_len)) == -1)
 		{
@@ -52,6 +44,13 @@ int main(int argc, char *argv[])
 			continue;
 		printf("******start**pthread_read**pthread_write******\n");
 
+		//写线程
+		if(pthread_create( &read_thread, NULL, pthread_spi, (void *)&newsockfd) < 0)  
+		{  
+			perror("fail to pthread_create");  
+			//exit(-1);  
+		}
+		
 		//读线程
 		if(pthread_create( &spi_thread, NULL, pthread_read, (void *)&newsockfd) < 0)  
 		{  
