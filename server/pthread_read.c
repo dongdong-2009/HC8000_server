@@ -2081,7 +2081,7 @@ void pthread_read(void *arg)
 				buf_atitude[i] = buf[91+i];
 			}
 			
-			if((fp_ston = fopen("stationmsg.txt","r+"))==NULL)//打开文件，之后判断是否打开成功
+			if((fp_ston = fopen("stationmsg.txt","w+"))==NULL)//打开文件，之后判断是否打开成功
 			{
 				perror("cannot open file");
 				exit(0);
