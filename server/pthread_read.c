@@ -2088,19 +2088,19 @@ void pthread_read(void *arg)
 			}
 			
 			bzero(stonbuf,128);
-			sprintf(stonbuf, "number:%s\n", buf_number);
+			sprintf(stonbuf, "number=%s\n", buf_number);
 			fputs(stonbuf, fp_ston);
 			
 			bzero(stonbuf,128);
-			sprintf(stonbuf, "name:%d\n", buf_name);
+			sprintf(stonbuf, "name=%s\n", buf_name);
 			fputs(stonbuf, fp_ston);
 			
 			bzero(stonbuf,128);
-			sprintf(stonbuf, "longitude:%s\n", buf_longitude);
+			sprintf(stonbuf, "longitude=%s\n", buf_longitude);
 			fputs(stonbuf, fp_ston);
 			
 			bzero(stonbuf,128);
-			sprintf(stonbuf, "atitude:%s\n", buf_atitude);
+			sprintf(stonbuf, "atitude=%s\n", buf_atitude);
 			fputs(stonbuf, fp_ston);
 			
 			fclose(fp_ston);

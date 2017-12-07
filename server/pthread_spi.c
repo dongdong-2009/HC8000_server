@@ -1299,18 +1299,18 @@ int runinfo(char *buf, int len)
 int read_stonmsg(char *buf_stationmsg, int len)
 {
 	FILE *fpston;
-	char stonbuf[128] = {0};
-	char buf_number[16] = {0};
+	char stonbuf[256] = {0};
+	char buf_number[64] = {0};
 	char buf_name[64] = {0};
-	char buf_longitude[10] = {0};
-	char buf_atitude[10] = {0};
+	char buf_longitude[64] = {0};
+	char buf_atitude[64] = {0};
 	
 	if((fpston = fopen("stationmsg.txt","r+"))==NULL)//打开文件，之后判断是否打开成功
 	{
 		perror("cannot open file");
 		exit(0);
 	}
-	while(fgets( stonbuf, 128, fpston) != NULL)
+	while(fgets( stonbuf, 256, fpston) != NULL)
 	{
 		if(stonbuf[1] == 'u')
 		{
@@ -1320,21 +1320,21 @@ int read_stonmsg(char *buf_stationmsg, int len)
 		{
 			strcpy(buf_name, stonbuf);
 		}
-		if(stonbuf[0] == 'l')
+		if(stonbuf[1] == 'o')
 		{
 			strcpy(buf_longitude, stonbuf);
 		}
-		if(stonbuf[0] == 'a')
+		if(stonbuf[1] == 't')
 		{
 			strcpy(buf_atitude, stonbuf);
 		}
-		bzero(stonbuf,30);
+		bzero(stonbuf,256);
 	}
 	buf_number[strlen(buf_number)-1] = '\0';
 	buf_name[strlen(buf_name)-1] = '\0';
 	buf_longitude[strlen(buf_longitude)-1] = '\0';
 	buf_atitude[strlen(buf_atitude)-1] = '\0';
-	snprintf( buf_stationmsg, len, "%s%d%s%s", buf_number, buf_name, buf_longitude, buf_atitude);
+	snprintf( buf_stationmsg, len, "%s,%s,%s,%s", buf_number, buf_name, buf_longitude, buf_atitude);
 	
 	fclose(fpston);
 	return 0;
@@ -1356,7 +1356,7 @@ void pthread_spi(void *arg)
 	char msg_AD[1024] = {0};
 	char netbuf[128] = {0};
 	char timebuf[128] = {0};
-	char stonmsg[128] = {0};
+	char stonmsg[256] = {0};
 	char datebuf[128] = {0};
 	
 	int sockfd = *((int *)arg);
@@ -1436,7 +1436,7 @@ void pthread_spi(void *arg)
 			//IP MAC TIME
 			get_ip_mac(netbuf, 100);
 			runinfo(timebuf, 100);
-			read_stonmsg(stonmsg, 100);
+			read_stonmsg(stonmsg, 256);
 			get_date(datebuf, 100);
 			
 			//寄存器的设定
