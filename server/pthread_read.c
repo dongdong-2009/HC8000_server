@@ -727,8 +727,8 @@ void pthread_read(void *arg)
 	char stonbuf[128] = {0};
 	char buf_number[16] = {0};
 	char buf_name[64] = {0};
-	char buf_longitude[10] = {0};
-	char buf_atitude[10] = {0};
+	char buf_longitude[16] = {0};
+	char buf_atitude[16] = {0};
 	flag = 0;
 	static_socket = 0;
 	
@@ -2072,13 +2072,13 @@ void pthread_read(void *arg)
 			{
 				buf_name[i] = buf[17+i];
 			}
-			for( i = 0; i < 10; i++)
+			for( i = 0; i < 16; i++)
 			{
 				buf_longitude[i] = buf[81+i];
 			}
-			for( i = 0; i < 10; i++)
+			for( i = 0; i < 16; i++)
 			{
-				buf_atitude[i] = buf[91+i];
+				buf_atitude[i] = buf[97+i];
 			}
 			
 			if((fp_ston = fopen("stationmsg.txt","w+"))==NULL)//打开文件，之后判断是否打开成功
@@ -2087,21 +2087,26 @@ void pthread_read(void *arg)
 				exit(0);
 			}
 			
-			bzero(stonbuf,128);
-			sprintf(stonbuf, "number=%s\n", buf_number);
+			memset(stonbuf, 0, 128);
+			buf_number[strlen(buf_number)] = '\n';
+			sprintf(stonbuf, "number=%s", buf_number);
 			fputs(stonbuf, fp_ston);
 			
-			bzero(stonbuf,128);
-			sprintf(stonbuf, "name=%s\n", buf_name);
+			memset(stonbuf, 0, 128);
+			buf_longitude[strlen(buf_longitude)] = '\n';
+			sprintf(stonbuf, "longitude=%s", buf_longitude);
 			fputs(stonbuf, fp_ston);
 			
-			bzero(stonbuf,128);
-			sprintf(stonbuf, "longitude=%s\n", buf_longitude);
+			memset(stonbuf, 0, 128);
+			buf_atitude[strlen(buf_atitude)] = '\n';
+			sprintf(stonbuf, "atitude=%s", buf_atitude);
 			fputs(stonbuf, fp_ston);
 			
-			bzero(stonbuf,128);
-			sprintf(stonbuf, "atitude=%s\n", buf_atitude);
+			memset(stonbuf, 0, 128);
+			buf_name[strlen(buf_name)] = '\n';
+			sprintf(stonbuf, "name=%s", buf_name);
 			fputs(stonbuf, fp_ston);
+			
 			
 			fclose(fp_ston);
 		}
