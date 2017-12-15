@@ -716,6 +716,20 @@ void pthread_read(void *arg)
 	FILE *fp;
 	char wbuf[128];
 	
+	char bool_local_loopback[2] = {0};
+	char bool_loop_data_enable[2] = {0};
+	char bool_phy_loopback[2] = {0};
+	char bool_Jumbo_frame_enable[2] = {0};
+	char bool_VLAN_enable[2] = {0};
+	char bool_RX_flow_control_enable[2] = {0};
+	char bool_Txflow_control_enable[2] = {0};
+	char bool_Max_frame_enable[2] = {0};
+	char XON_threshold[8] = {0};
+	char XOFF_threshold[8] = {0};
+	char XOFF_request_timer[8] = {0};
+	char Pause_quanta[8] = {0};
+	char Max_frame_size[8] = {0};
+	
 	char ip[DATALEN*4] = {0};
 	char mac[DATALEN*4] = {0};
 	char date[DATALEN*4] = {0};	
@@ -1983,6 +1997,115 @@ void pthread_read(void *arg)
 			{
 				wReg("rx_digital_loop_ena", wdata);
 			}
+		}
+		
+		if(type == 't')//设置网口信息
+		{
+			
+			bool_local_loopback[0] = buf[1];
+			bool_loop_data_enable[0] = buf[2];
+			bool_phy_loopback[0] = buf[3];
+			bool_Jumbo_frame_enable[0] = buf[4];
+			bool_VLAN_enable[0] = buf[5];
+			bool_RX_flow_control_enable[0] = buf[6];
+			bool_Txflow_control_enable[0] = buf[7];
+			bool_Max_frame_enable[0] = buf[8];
+			
+			for( i = 0; i < 8; i++)
+			{
+				XON_threshold[i] = buf[9+i];
+			}
+			for( i = 0; i < 8; i++)
+			{
+				XOFF_threshold[i] = buf[17+i];
+			}
+			for( i = 0; i < 8; i++)
+			{
+				XOFF_request_timer[i] = buf[25+i];
+			}
+			for( i = 0; i < 8; i++)
+			{
+				Pause_quanta[i] = buf[33+i];
+			}
+			for( i = 0; i < 8; i++)
+			{
+				Max_frame_size[i] = buf[41+i];
+			}
+			printf(" Msg type=%c set eth_mac\n", type);
+			
+			wdata = atoi( bool_local_loopback);
+			if((wdata == 1) && (wdata == 0))
+			{
+				wReg("eth_eth_local_loopback", wdata);
+			}
+			wdata = atoi( bool_loop_data_enable);
+			if((wdata == 1) && (wdata == 0))
+			{
+				wReg("eth_eth_lb_ena_override", wdata);
+			}
+			wdata = atoi( bool_phy_loopback);
+			if((wdata == 1) && (wdata == 0))
+			{
+				//wReg("eth_xon_thres", wdata);目前无法设置
+			}
+			wdata = atoi( bool_Jumbo_frame_enable);
+			if((wdata == 1) && (wdata == 0))
+			{
+				wReg("tme_conf_rx_jumbo_enable", wdata);
+				wReg("tme_conf_tx_jumbo_enable", wdata);
+			}
+			wdata = atoi( bool_VLAN_enable);
+			if((wdata == 1) && (wdata == 0))
+			{
+				wReg("tme_conf_rx_vlan_enable", wdata);
+				wReg("tme_conf_tx_vlan_enable", wdata);
+			}
+			wdata = atoi( bool_RX_flow_control_enable);
+			if((wdata == 1) && (wdata == 0))
+			{
+				wReg("tme_conf_rx_flow_cntrl_ena", wdata);
+			}
+			wdata = atoi( bool_Txflow_control_enable);
+			if((wdata == 1) && (wdata == 0))
+			{
+				wReg("tme_conf_tx_flow_cntrl_ena", wdata);
+			}
+			wdata = atoi( bool_Max_frame_enable);
+			if((wdata == 1) && (wdata == 0))
+			{
+				wReg("tme_conf_rx_max_frame_ena", wdata);
+				wReg("tme_conf_tx_max_frame_ena", wdata);
+			}
+			
+			
+			wdata = atoi( XON_threshold);
+			if((wdata > 9) && (wdata < 60000))
+			{
+				wReg("eth_xon_thres", wdata);
+			}
+			wdata = atoi( XOFF_threshold);
+			if((wdata > 9) && (wdata < 60000))
+			{
+				wReg("eth_xoff_thres", wdata);
+			}
+			wdata = atoi( XOFF_request_timer);
+			if((wdata > 9) && (wdata < 60000))
+			{
+				wReg("eth_xoff_timeout", wdata);
+			}
+			wdata = atoi( Pause_quanta);
+			if((wdata > 9) && (wdata < 60000))
+			{
+				wReg("eth_pause_quanta", wdata);
+			}
+			
+		}
+		if(type == 's')//网口信息清零
+		{
+			printf(" Msg type=%c,eth_mac reset\n", type);
+				
+			wReg("tme_conf_rx_reset", 1);
+			wReg("tme_conf_tx_reset", 1);	
 		}
 		
 		if(type == 'Z')//set ip
