@@ -1349,6 +1349,69 @@ int get_date(char *date, int len)
 	return 0;
 }
 
+double get_temperature()  
+{  
+  
+    int fdWB, res, i;  
+    struct termios  oldtio, newtio;  
+    char buf[256] = {0}; 
+	double tem;
+	char t[4];
+//-----------打开uart设备文件------------------  
+    fdWB = open(UART_DEVICE, O_RDWR|O_NOCTTY);
+    if (fdWB < 0) {  
+        perror(UART_DEVICE);  
+        exit(-1);  
+    }  
+    else  
+        printf("Open %s successfully\n", UART_DEVICE);  
+
+//-----------设置操作参数-----------------------    
+    tcgetattr(fdWB, &oldtio);//获取当前操作模式参数  
+    memset( &newtio, 0, sizeof(newtio));  
+	
+    //波特率=115200 数据位=8 使能数据接收   
+    newtio.c_cflag = B115200|CS8|CLOCAL|CREAD;  
+    newtio.c_iflag = IGNPAR;   
+    //newtio.c_oflag = OPOST | OLCUC; //  
+    /* 设定为正规模式 */  
+    //newtio.c_lflag = ICANON;  
+  
+    tcflush(fdWB, TCIFLUSH);//清空输入缓冲区和输出缓冲区  
+    tcsetattr(fdWB, TCSANOW, &newtio);//设置新的操作参数  
+
+//-------------从uart接收数据-------------------  	
+	for(i = 0; i < 100000; i++)
+	{
+		res = read( fdWB, buf, 255);//程序将在这里挂起，直到从uart接收到数据（阻塞操作）  
+		if (res == 0)   
+			continue;  
+		
+		printf("%s\n", buf);//将uart接收到的字符打印出来  
+		// if (buf[0] == '!')//uart接收到！字符后退出while  
+			// break;  
+		if (buf[0] == 'p') //p 高低栈pin脚的值  1-high  0-low
+			pin = buf[1];
+		if (buf[0] == 'l') //l 锁pin脚的值 1-lock 0-unlock
+			lock = buf[1];
+		if (buf[0] == 't') //t temperature温度值 
+		{
+			t[0] = buf[1];
+			t[1] = buf[2];
+			t[2] = buf[3];
+			t[3] = buf[4];
+			tem = (double)atoi(t) / 100;
+		}
+		printf("p=%c l=%c tem=%4.2f\n", pin, lock, tem);
+	}
+//------------关闭uart设备文件，恢复原先参数--------  
+    close(fdWB);  
+    printf("Close %s\n", UART_DEVICE);  
+    tcsetattr(fdWB, TCSANOW, &oldtio); //恢复原先的设置  
+  
+    return tem;  
+}
+
 void pthread_spi(void *arg)
 {
     int ret, i;
@@ -1417,7 +1480,7 @@ void pthread_spi(void *arg)
 	da_data = get_DA();
 	ad_data = get_AD();
 	wb_data = get_WB();
-	
+	get_temperature();
 	while(1)
 	{
 		usleep(1000);

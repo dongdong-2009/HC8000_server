@@ -47,6 +47,7 @@
 #define MSGSIZE 1024*11  //发送显示信息msg大小
 
 #define DEBUG 0
+#define RegNum 44
 #define UART_DEVICE "/dev/ttyS2" //uart设备文件名 
 
 int net_init();
@@ -69,6 +70,8 @@ int da_data;
 int ad_data;
 int wb_data;
 
+char pin;//stm32 高低栈管脚状态
+char lock;//stm32锁管脚状态
 //char buf[SIZEBUF]; //接收信息buf 1+8N模式解析信息
 
 
@@ -79,5 +82,5 @@ struct Reg{
 	int width;
 	uint32_t mask;
 }tmp;
-//名称	                                    基地址  偏移地址  位宽   掩码mask
 
+	
